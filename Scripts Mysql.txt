@@ -191,6 +191,7 @@ BEGIN
                       
 END;
 
+DROP PROCEDURE IF EXISTS posdb.spr_Consultas;
 CREATE PROCEDURE posdb.`spr_Consultas`(
 p_Tabla varchar(50),
 p_Dato varchar(50))
@@ -208,11 +209,17 @@ BEGIN
              SELECT * FROM Proveedores;
          END IF;
      ELSEIF (p_Tabla = 'Productos') THEN
-             IF (p_Dato <> '') THEN
-                 SELECT * FROM Productos 
-                 WHERE Nombre LIKE CONCAT('%', p_Dato , '%');
+             IF (p_Dato <> '') THEN                 
+                 SELECT P.Producto_Id, V.Nombre AS Proveedor, C.Nombre AS Categoria, P.nombre, P.Cantidad, P.Precio_Compra, P.Precio_Venta 
+                 FROM Productos P
+                 INNER JOIN categorias C ON C.categoria_id = P.categoria_Id 
+                 INNER JOIN proveedores V ON V.proveedor_Id = P.proveedor_Id
+                 WHERE P.Nombre LIKE CONCAT('%', p_Dato , '%');
              ELSE
-                  SELECT * FROM Productos;
+                  SELECT P.Producto_Id, V.Nombre AS Proveedor, C.Nombre AS Categoria, P.nombre, P.Cantidad, P.Precio_Compra, P.Precio_Venta 
+                  FROM Productos P
+                  INNER JOIN categorias C ON C.categoria_id = P.categoria_Id 
+                  INNER JOIN proveedores V ON V.proveedor_Id = P.proveedor_Id;
              END IF;
      ELSEIF (p_Tabla = 'Categorias') THEN
              IF (p_Dato <> '') THEN
