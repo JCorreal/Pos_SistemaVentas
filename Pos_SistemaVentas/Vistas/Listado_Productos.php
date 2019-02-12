@@ -69,12 +69,12 @@
            </tr>
 
               <tr height="30px">
+                  <th style="border-bottom:1px solid #333;"> Proveedor </th>
                   <th style="border-bottom:1px solid #333;"> Categoria </th>
-                  <th style="border-bottom:1px solid #333;"> Nombre </th>
+                  <th style="border-bottom:1px solid #333;"> Producto </th>
                   <th style="border-bottom:1px solid #333;"> Cantidad Stock </th>
                   <th style="border-bottom:1px solid #333;"> Precio Compra </th>
-                  <th style="border-bottom:1px solid #333;"> Precio Venta </th>
-                  <th style="border-bottom:1px solid #333;"> Proveedor </th>
+                  <th style="border-bottom:1px solid #333;"> Precio Venta </th>                
                   <th style="border-bottom:1px solid #333;"> Accion </th>
               </tr>
 
@@ -94,10 +94,10 @@
                       $vector_resultado = $controlador->BuscarDatoLista($tabla, $DatoBuscar);                              
                   }
                   for ($i = 0; $i < (sizeof($vector_resultado)); $i++){?>    
-                     <tr align="center" style="height:25px">
-                       <td style="border-bottom:1px solid #333;"> <?php echo $vector_resultado[$i][1]; ?> </td>
-                       <td style="border-bottom:1px solid #333;"> <?php echo $vector_resultado[$i][2]; ?> </td>
-                       <td style="border-bottom:1px solid #333;"> <?php echo $vector_resultado[$i][3]; ?> pcs. </td>
+                     <tr align="center" style="height:25px">                                              
+                       <td style="border-bottom:1px solid #333;"> <?php echo $vector_resultado[$i][1]; ?> </td>    
+                       <td style="border-bottom:1px solid #333;"> <?php echo $vector_resultado[$i][2]; ?> </td>  
+                       <td style="border-bottom:1px solid #333;"> <?php echo $vector_resultado[$i][3]; ?> </td>
                        <td style="border-bottom:1px solid #333;">$ <?php echo $vector_resultado[$i][4]; ?> </td>
                        <td style="border-bottom:1px solid #333;">$ <?php echo $vector_resultado[$i][5]; ?> </td>
                        <td style="border-bottom:1px solid #333;"> <?php echo $vector_resultado[$i][6]; ?> </td>
