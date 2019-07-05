@@ -44,7 +44,7 @@
               <?php
                    require_once '../BLL/Funciones.php';     
                    $vector_resultado = array();
-                   $tabla = 'Ventas';           
+                   $tabla = 'tbl_Ventas';           
                    $controlador = Funciones::CrearControlador();            
                    $DatoBuscar='';
                    if ($DatoBuscar != '')

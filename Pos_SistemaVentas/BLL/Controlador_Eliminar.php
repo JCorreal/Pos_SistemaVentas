@@ -10,19 +10,19 @@
 
      if ($Resultado== 0)
      {
-        if ($tabla == 'Clientes') 
+        if ($tabla == 'tbl_Clientes') 
         {
           header("Location: ../Vistas/Listado_Clientes.php");
         }
-        else if ($tabla == 'Proveedores') 
+        else if ($tabla == 'tbl_Proveedores') 
         {
           header("Location: ../Vistas/Listado_Proveedores.php");
         }
-        else if ($tabla == 'Productos') 
+        else if ($tabla == 'tbl_Productos') 
         {
           header("Location: ../Vistas/Listado_Productos.php");
         }
-        else if ($tabla == 'Categorias') 
+        else if ($tabla == 'tbl_Categorias') 
         {
           header("Location: ../Vistas/Listado_Categorias.php");
         }

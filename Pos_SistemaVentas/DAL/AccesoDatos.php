@@ -10,7 +10,7 @@ class AccesoDatos implements IAccesoDatos{
     try 
      {                   
         $cn = Conexion::ObtenerConexion();
-        $rs= $cn->query("CALL spr_Acceso('" . $username . "', '" . $clave . "')");
+        $rs= $cn->query("CALL SPR_R_Acceso('" . $username . "', '" . $clave . "')");
         $vecresultado = array(); 
         while ($fila = $rs->fetch_row()) {
                array_push($vecresultado, $fila);                
@@ -35,7 +35,7 @@ class AccesoDatos implements IAccesoDatos{
      try 
      {                 
         $cn = Conexion::ObtenerConexion();  
-        $rs= $cn->query("CALL spr_BuscarRegistro('" . $tabla . "', '" . $buscardato . "')");
+        $rs= $cn->query("CALL SPR_R_BuscarRegistro('" . $tabla . "', '" . $buscardato . "')");
         $vecresultado = array(); 
         while ($fila = $rs->fetch_row()) {
                array_push($vecresultado, $fila);                
@@ -50,6 +50,7 @@ class AccesoDatos implements IAccesoDatos{
        echo $ex;     
      }
   }
+  
           
   public function BuscarDatoLista($tabla, $buscardato)
   {
@@ -57,7 +58,7 @@ class AccesoDatos implements IAccesoDatos{
     try
     {
       $cn = Conexion::ObtenerConexion();  
-      $rs= $cn->query("CALL spr_Consultas('" . $tabla . "',  '" . $buscardato . "')");          
+      $rs= $cn->query("CALL SPR_R_Consultas('" . $tabla . "',  '" . $buscardato . "')");          
       while ($fila = $rs->fetch_row())
       {
          array_push($ListaElementos, $fila);                
@@ -81,7 +82,7 @@ class AccesoDatos implements IAccesoDatos{
     try
     {
       $cn = Conexion::ObtenerConexion();
-      $RefCAllSp = $cn->prepare('CALL spr_CargarCombosListas(?)');
+      $RefCAllSp = $cn->prepare('CALL SPR_R_CargarCombosListas(?)');
       $RefCAllSp->bind_param("s", $tabla);
       $RefCAllSp->execute();      
       $RefCAllSp->bind_result($resultado1, $resultado2, $resultado3); 
@@ -107,7 +108,7 @@ class AccesoDatos implements IAccesoDatos{
   { 
     try
     {
-       $vecr = AccesoDatos::BuscarRegistro('Proveedores', $buscardato);
+       $vecr = AccesoDatos::BuscarRegistro('tbl_Proveedores', $buscardato);
        if ($vecr!= NULL)
        {
          $proveedor = new Proveedor();
@@ -135,7 +136,7 @@ class AccesoDatos implements IAccesoDatos{
   { 
     try
     {
-       $vecr = AccesoDatos::BuscarRegistro('Productos', $buscardato);
+       $vecr = AccesoDatos::BuscarRegistro('tbl_Productos', $buscardato);
        if ($vecr!= NULL)
        {
          $producto = new Producto();
@@ -164,7 +165,7 @@ class AccesoDatos implements IAccesoDatos{
   { 
     try
     {
-       $vecr = AccesoDatos::BuscarRegistro('Clientes', $buscardato);
+       $vecr = AccesoDatos::BuscarRegistro('tbl_Clientes', $buscardato);
        if ($vecr!= NULL)
        {
          $cliente = new Cliente();
@@ -191,7 +192,7 @@ class AccesoDatos implements IAccesoDatos{
   {  
     try
     {
-       $vecr = AccesoDatos::BuscarRegistro('Categorias', $buscardato);
+       $vecr = AccesoDatos::BuscarRegistro('tbl_Categorias', $buscardato);
        if ($vecr!= NULL)
        {
          $categoria = new Categoria();
@@ -217,7 +218,7 @@ class AccesoDatos implements IAccesoDatos{
      {             
         $cn = Conexion::ObtenerConexion(); 
         $cn->query("SET @result = 1");
-        $cn->query("CALL spr_IUCategorias('" . $categoria->getCategoria_id() . "', 
+        $cn->query("CALL SPR_IU_Categorias('" . $categoria->getCategoria_id() . "', 
                                           '" . $categoria->getNombre() . "',                                            
                                           @result)");
 
@@ -239,7 +240,7 @@ class AccesoDatos implements IAccesoDatos{
      {                   
         $cn = Conexion::ObtenerConexion(); 
         $cn->query("SET @result = 1");
-        $cn->query("CALL spr_IUProveedores('" . $proveedor->getProveedor_id () . "',
+        $cn->query("CALL SPR_IU_Proveedores('" . $proveedor->getProveedor_id () . "',
                                          '" . $proveedor->getNombre() . "',
                                          '" . $proveedor->getContacto() . "', 
                                          '" . $proveedor->getDireccion() . "', 
@@ -265,7 +266,7 @@ class AccesoDatos implements IAccesoDatos{
      {                   
         $cn = Conexion::ObtenerConexion(); 
         $cn->query("SET @result = 1");
-        $cn->query("CALL spr_IUClientes('" . $cliente->getCliente_id () . "',
+        $cn->query("CALL SPR_IU_Clientes('" . $cliente->getCliente_id () . "',
                                         '" . $cliente->getNombre() . "',
                                         '" . $cliente->getTelefono() . "', 
                                         '" . $cliente->getDireccion() . "', 
@@ -290,7 +291,7 @@ class AccesoDatos implements IAccesoDatos{
      {                   
         $cn = Conexion::ObtenerConexion(); 
         $cn->query("SET @result = 1");
-        $cn->query("CALL spr_IUProductos('" . $producto->getProducto_id() . "',
+        $cn->query("CALL SPR_IU_Productos('" . $producto->getProducto_id() . "',
                                          '" . $producto->getCategoria_id() . "',                                                                        
                                          '" . $producto->getProveedor_id() . "',
                                          '" . $producto->getNombre() . "', 
@@ -318,7 +319,7 @@ class AccesoDatos implements IAccesoDatos{
      {                   
         $cn = Conexion::ObtenerConexion(); 
         $cn->query("SET @result = 1");
-        $cn->query("CALL spr_IVentas('" . $sale->getProducto_id() . "',
+        $cn->query("CALL SPR_I_Ventas('" . $sale->getProducto_id() . "',
                                     '" . $sale->getCliente_id() . "',                                                                                                                                            
                                     '" . $sale->getCantidad() . "', 
                                     '" . $sale->getMonto_recibido() . "',           
@@ -342,7 +343,7 @@ class AccesoDatos implements IAccesoDatos{
    {   
       $cn = Conexion::ObtenerConexion();     
       $cn->query("SET @result = 1");
-      $cn->query("CALL spr_EliminarRegistro('" . $tabla . "', '" . $datobuscar . "',  @result)");
+      $cn->query("CALL SPR_D_EliminarRegistro('" . $tabla . "', '" . $datobuscar . "',  @result)");
    
       $res = $cn->query("SELECT @result AS result");
       $row = $res->fetch_assoc();

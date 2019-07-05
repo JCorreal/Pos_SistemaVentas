@@ -82,7 +82,7 @@
                  <?php
                       require_once '../BLL/Funciones.php';     
                       $vector_resultado = array();
-                      $tabla = 'Proveedores';           
+                      $tabla = 'tbl_Proveedores';           
                       $controlador = Funciones::CrearControlador();
 
                       if ($DatoBuscar != NULL)
@@ -105,7 +105,7 @@
                               <a href="../Vistas/Proveedores.php?id=<?php echo $vector_resultado[$i][0];?>">
                               <input type="button" value="Editar" style="width:50px; height:20; color:#FFF; background:#069; border:1px solid #069; border-radius:3px;"/>
                            </a>
-                           <a href="../BLL/Controlador_Eliminar.php?id=<?php echo $vector_resultado[$i][0];?>&tabla=Proveedores">
+                           <a href="../BLL/Controlador_Eliminar.php?id=<?php echo $vector_resultado[$i][0];?>&tabla=tbl_Proveedores">
                               <input type="button" value="Eliminar" onclick="return Confirmar();" style="width:15; height:20; color:#FFF; background: #900; border:1px solid #900; border-radius:3px;"/>
                            </a>  
                           </td>                   

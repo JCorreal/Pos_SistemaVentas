@@ -60,7 +60,7 @@
         $controlador = Funciones::CrearControlador();
         if(empty($_SESSION['ListadoProveedores']))               
            {
-             $arlistado = $controlador->CargarCombos("Productos");             
+             $arlistado = $controlador->CargarCombos("tbl_Productos");             
                 for($j=0; $j<(sizeof ($arlistado)); $j++)
                 {           
                     if ($arlistado[$j] == "Categorias")
