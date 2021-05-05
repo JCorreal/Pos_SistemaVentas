@@ -41,7 +41,7 @@ CREATE TABLE `tbl_productos` (
   `Nombre` varchar(100) NOT NULL COMMENT 'Nombre que identifica el producto',
   `Cantidad` int(11) NOT NULL COMMENT 'Cantidad de stock existente',
   `Precio_Compra` int(11) NOT NULL COMMENT 'Es el precio que cuesta adquirir el producto',
-  `Precio_Venta` int(11) NOT NULL COMMENT 'Es el precio al cual se vender· el producto',
+  `Precio_Venta` int(11) NOT NULL COMMENT 'Es el precio al cual se vender√° el producto',
   PRIMARY KEY (`Producto_Id`),
   KEY `FK_SUPPLIER_ID` (`Proveedor_Id`),
   KEY `FK_category_id` (`Categoria_Id`),
@@ -66,7 +66,7 @@ CREATE TABLE `tbl_ventas` (
   CONSTRAINT `FK_product_id` FOREIGN KEY (`Producto_Id`) REFERENCES `tbl_productos` (`Producto_Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Estructura que almacenara las ventas del sistema';
 
-CREATE PROCEDURE posdb.`SPR_Acceso`(
+CREATE PROCEDURE posdb.`SPR_R_Acceso`(
 p_User_Name varchar(20),
 p_Clave varchar(20))
 BEGIN
