@@ -176,7 +176,7 @@
                     <td align="center">
 			<table width="40%" align="center" border="1" cellspacing="0" cellpadding="6">
                             <tr>
-                                <td align="center" bgcolor="#008080"><big style="color:#FFFFFF"><b>Administrar Categorías</b></big></td>
+                                <td align="center" bgcolor="#008080"><big style="color:#FFFFFF"><b>Seleccionar Productos</b></big></td>
                             </tr>
 
                             <tr>
