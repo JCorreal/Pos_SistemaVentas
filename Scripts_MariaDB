@@ -1,0 +1,531 @@
+CREATE DATABASE posdb CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+CREATE TABLE tbl_usuarios (
+  Usuario_Id int(11) NOT NULL AUTO_INCREMENT COMMENT 'Llave primaria de la estructura',
+  User_Name varchar(20) NOT NULL COMMENT 'Nombre de Usuario',
+  Clave varchar(20) NOT NULL COMMENT 'Clave o password de acceso',
+  Perfil_Acceso tinyint(1) NOT NULL COMMENT 'Nivel de permisos sobre el sistema',
+  PRIMARY KEY (Usuario_Id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Estructura que almacenara los diferentes usuarios que controlan el sistema';
+
+CREATE TABLE tbl_clientes (
+  Cliente_Id int(11) NOT NULL AUTO_INCREMENT COMMENT 'LLave Primaria para la estructura',
+  Nombre varchar(50) NOT NULL COMMENT 'Nombres del cliente',
+  Telefono varchar(10) NOT NULL COMMENT 'Numero telefonico del cliente',
+  Direccion varchar(50) NOT NULL COMMENT 'Direccion de residencia del cliente',
+  Observacion varchar(100) DEFAULT NULL COMMENT 'Alguna nota u observacion',
+  PRIMARY KEY (Cliente_Id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Estructura que almacenara los potenciales clientes involucrados en las ventas';
+
+CREATE TABLE tbl_categorias (
+  Categoria_Id int(11) NOT NULL AUTO_INCREMENT COMMENT 'LLave Primaria para la estructura',
+  Nombre varchar(50) NOT NULL COMMENT 'Nombre que identifica la categoria asociada al producto',
+  PRIMARY KEY (Categoria_Id),
+  UNIQUE KEY NOMBRE (Nombre)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Estructura que almacenara las categorias que clasificaran los productos';
+
+CREATE TABLE tbl_proveedores (
+  Proveedor_Id int(11) NOT NULL AUTO_INCREMENT COMMENT 'Llave primaria de la estructura',
+  Nombre varchar(50) NOT NULL COMMENT 'Nombre que identifica el proveedor',
+  Contacto varchar(50) NOT NULL COMMENT 'Persona de contacto del proveedor',
+  Direccion varchar(50) NOT NULL COMMENT 'Direccion fisica del proveedor',
+  Telefono varchar(10) NOT NULL COMMENT 'Numero telefonico para el proveedor',
+  Observacion varchar(100) DEFAULT NULL COMMENT 'Alguna Observacion',
+  PRIMARY KEY (Proveedor_Id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Estructura que almacenara los diversos proveedores que suministran productos para la venta';
+
+CREATE TABLE tbl_productos (
+  Producto_Id int(11) NOT NULL AUTO_INCREMENT COMMENT 'Llave Primaria de la estructura',
+  Categoria_Id int(11) NOT NULL COMMENT 'LLave foranea de estructura categorias',
+  Proveedor_Id int(11) NOT NULL COMMENT 'LLave foranea de estructura proveedores',
+  Nombre varchar(100) NOT NULL COMMENT 'Nombre que identifica el producto',
+  Cantidad int(11) NOT NULL COMMENT 'Cantidad de stock existente',
+  Precio_Compra int(11) NOT NULL COMMENT 'Es el precio que cuesta adquirir el producto',
+  Precio_Venta int(11) NOT NULL COMMENT 'Es el precio al cual se venderá el producto',
+  PRIMARY KEY (Producto_Id),
+  KEY FK_SUPPLIER_ID (Proveedor_Id),
+  KEY FK_category_id (Categoria_Id),
+  CONSTRAINT FK_SUPPLIER_ID FOREIGN KEY (Proveedor_Id) REFERENCES tbl_proveedores (Proveedor_ID),
+  CONSTRAINT FK_category_id FOREIGN KEY (Categoria_Id) REFERENCES tbl_categorias (Categoria_Id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Estructura que almacenara los diferentes productos a ofrecer en las ventas';
+
+CREATE TABLE tbl_ventas (
+  Venta_Id int(11) NOT NULL AUTO_INCREMENT COMMENT 'Llave primaria de la estructura',
+  Producto_Id int(11) NOT NULL COMMENT 'Llave foranea de estructura Productos',
+  Cliente_Id int(11) NOT NULL COMMENT 'Llave foranea de estructura Clientes',
+  Fecha timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Fecha en que se realiza la venta, la toma la propia BD',
+  Cantidad int(11) NOT NULL COMMENT 'Numero de productos en venta',
+  Total int(11) NOT NULL COMMENT 'Monto total de la venta implicada (Precio_venta * Cantidad)',
+  Ganancia int(11) NOT NULL COMMENT 'Utilidad de la venta (Total - (Cantidad * Precio_Compra))',
+  Monto_Recibido int(11) NOT NULL COMMENT 'Dinero total recibido del comprador',
+  Cambio int(11) NOT NULL COMMENT 'Devolucion o cambio del efectivo entregado por el cliente',
+  PRIMARY KEY (Venta_Id),
+  KEY FK_CUSTOMER_ID (Cliente_Id),
+  KEY FK_product_id (Producto_Id),
+  CONSTRAINT FK_CUSTOMER_ID FOREIGN KEY (Cliente_Id) REFERENCES tbl_clientes (Cliente_Id),
+  CONSTRAINT FK_product_id FOREIGN KEY (Producto_Id) REFERENCES tbl_productos (Producto_Id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Estructura que almacenara las ventas del sistema';
+
+
+CREATE PROCEDURE posdb.SPR_D_EliminarRegistro(
+IN p_Tabla      varchar(50),
+IN p_Dato       int(11),
+OUT p_Resultado tinyint(1))
+BEGIN
+      DECLARE v_DatoExiste varchar(50) DEFAULT NULL;
+      DECLARE CURVACIO	   INT DEFAULT 0;
+      
+      DECLARE Cur_Categoria CURSOR FOR
+      SELECT Categoria_Id
+      FROM   tbl_productos
+      WHERE  Categoria_Id  = p_Dato LIMIT 1;
+      
+      DECLARE Cur_Cliente CURSOR FOR
+      SELECT Cliente_Id
+      FROM   tbl_ventas
+      WHERE  Cliente_Id  = p_Dato LIMIT 1;
+      
+      DECLARE Cur_Producto CURSOR FOR
+      SELECT Producto_Id
+      FROM   tbl_ventas
+      WHERE  Producto_Id  = p_Dato LIMIT 1;
+      
+      DECLARE Cur_Proveedor CURSOR FOR
+      SELECT Proveedor_Id
+      FROM   tbl_productos
+      WHERE  Proveedor_Id  = p_Dato LIMIT 1;
+
+      DECLARE CONTINUE HANDLER FOR NOT FOUND SET CURVACIO = 1;
+      DECLARE EXIT HANDLER FOR SQLEXCEPTION SET p_RESULTADO = 2;
+     
+      SET p_Resultado = 0;
+      
+      IF(p_Tabla = 'tbl_categorias') THEN
+         SET CURVACIO = 0;
+	       OPEN Cur_Categoria;
+		     FETCH Cur_Categoria INTO v_DatoExiste;
+		     CLOSE Cur_Categoria;
+         IF (v_DatoExiste IS NOT NULL) THEN
+             SET p_Resultado = 1;
+         ELSE
+             DELETE FROM tbl_categorias WHERE Categoria_Id = p_Dato;
+         END IF;		 
+      ELSEIF (p_Tabla = 'tbl_clientes')  THEN              
+              SET CURVACIO = 0;
+              OPEN Cur_Cliente;
+              FETCH Cur_Cliente INTO v_DatoExiste;
+              CLOSE Cur_Cliente;
+              IF (v_DatoExiste IS NOT NULL) THEN
+                  SET p_Resultado = 1;
+              ELSE
+                  DELETE FROM tbl_clientes WHERE Cliente_Id = p_Dato;
+              END IF;
+      ELSEIF (p_Tabla = 'tbl_productos')  THEN              
+              SET CURVACIO = 0;
+              OPEN Cur_Producto;
+              FETCH Cur_Producto INTO v_DatoExiste;
+              CLOSE Cur_Producto;
+              IF (v_DatoExiste IS NOT NULL) THEN
+                  SET p_Resultado = 1;
+              ELSE
+                  DELETE FROM tbl_productos WHERE Producto_Id = p_Dato;
+              END IF;		         
+      ELSEIF (p_Tabla = 'tbl_proveedores')  THEN              
+              SET CURVACIO = 0;
+              OPEN Cur_Proveedor;
+              FETCH Cur_Proveedor INTO v_DatoExiste;
+              CLOSE Cur_Proveedor;
+              IF (v_DatoExiste IS NOT NULL) THEN
+                  SET p_Resultado = 1;
+              ELSE
+                  DELETE FROM tbl_proveedores WHERE Proveedor_Id = p_Dato;
+              END IF;		         
+      END IF;
+      
+      COMMIT;    
+                      
+END;
+
+CREATE PROCEDURE posdb.SPR_IU_Categorias(
+IN p_Categoria_Id       INT(11),
+IN p_Nombre             VARCHAR(50),
+OUT p_Resultado         tinyint(1))
+BEGIN
+      DECLARE v_NombreNuevo  VARCHAR(50) DEFAULT NULL;
+      DECLARE v_NombreActual VARCHAR(50) DEFAULT NULL;
+      DECLARE CURVACIO	INT DEFAULT 0;
+      
+      DECLARE Cur_Nombre CURSOR FOR
+      SELECT NOMBRE
+      FROM   tbl_categorias
+      WHERE  NOMBRE  = p_Nombre;
+      
+      DECLARE EXIT HANDLER FOR SQLEXCEPTION SET p_RESULTADO = 2;
+      DECLARE CONTINUE HANDLER FOR NOT FOUND SET CURVACIO = 1;
+ 
+      SET p_Resultado = 0;
+      
+      -- Validar que no exista el nombre que envian como parametro
+      SET CURVACIO = 0;
+      OPEN Cur_Nombre;
+      FETCH Cur_Nombre INTO v_NombreNuevo;
+      CLOSE Cur_Nombre;
+          
+      IF (p_Categoria_Id = 0) THEN
+          IF (v_NombreNuevo IS NOT NULL) THEN
+		          SET p_Resultado = 1;      
+	        ELSE		       
+              INSERT INTO tbl_categorias(Nombre) VALUES(p_Nombre);                                                                                      
+          END IF;                
+      ELSE
+           SELECT NOMBRE INTO v_NombreActual FROM tbl_categorias WHERE Categoria_Id = p_Categoria_Id;
+           IF ((v_NombreNuevo IS NOT NULL) AND (v_NombreActual <> p_NOMBRE)) THEN
+			         SET p_Resultado = 1;	  
+	         ELSE		            
+               UPDATE tbl_categorias SET NOMBRE = p_Nombre          
+               WHERE Categoria_Id = p_Categoria_Id;          
+           END IF;              
+      END IF;
+        
+        COMMIT;
+     
+END;
+
+CREATE PROCEDURE posdb.SPR_IU_Clientes(
+IN  p_Cliente_Id	int(11),
+IN  p_Nombre	    varchar(50),
+IN  p_Telefono	  varchar(10),
+IN  p_Direccion   varchar(50),
+IN  p_Observacion varchar(100),
+OUT p_Resultado   tinyint (1))
+BEGIN
+     DECLARE EXIT HANDLER
+     FOR SQLEXCEPTION
+     BEGIN
+          SET p_Resultado = -1;
+          ROLLBACK;
+     END; 
+     
+     SET p_Resultado = 0;
+     
+     
+      IF (p_Cliente_Id = 0) THEN
+          START TRANSACTION;
+          INSERT INTO tbl_clientes(Nombre,
+                                Telefono,
+                                Direccion,
+                                Observacion) 
+                                VALUES(p_Nombre,
+                                       p_Telefono,
+                                       p_Direccion,
+                                       p_Observacion);
+      ELSE
+          START TRANSACTION;
+          UPDATE tbl_clientes
+          SET    Nombre      = p_Nombre,
+                 Telefono    = p_Telefono,
+                 Direccion   = p_Direccion,
+                 Observacion = p_Observacion
+          WHERE  Cliente_Id  = p_Cliente_Id ;
+          
+      END IF;
+      
+      COMMIT;
+      
+END;
+
+CREATE PROCEDURE posdb.SPR_IU_Productos(
+IN  p_Producto_Id	  int(11),
+IN  p_Categoria_Id	int(11),
+IN  p_Proveedor_Id  int(11),
+IN  p_Nombre	      varchar(100),
+IN  p_Cantidad	    int(11),
+IN  p_Precio_Compra int(11),
+IN  p_Precio_Venta  int(11),
+OUT p_Resultado     tinyint (1))
+BEGIN
+     
+     DECLARE EXIT HANDLER
+     FOR SQLEXCEPTION
+     BEGIN
+          SET p_Resultado = -1;
+          ROLLBACK;
+     END; 
+     SET p_Resultado = 0;
+     
+     
+      IF (p_Producto_Id = 0) THEN
+          START TRANSACTION;
+          INSERT INTO tbl_productos(Categoria_Id,
+                                Proveedor_Id,
+                                Nombre,
+                                Cantidad,
+                                Precio_Compra,
+                                Precio_Venta)                                                  
+                               VALUES(p_Categoria_Id,                                      
+                                      p_Proveedor_Id,
+                                      p_Nombre,
+                                      p_Cantidad,
+                                      p_Precio_Compra,
+                                      p_Precio_Venta);
+      ELSE
+          START TRANSACTION;
+          UPDATE tbl_productos
+          SET    Categoria_Id  = p_Categoria_Id,
+                 Proveedor_Id  = p_Proveedor_Id,
+                 Nombre        = p_Nombre,
+                 Cantidad      = p_Cantidad,
+                 Precio_Compra = p_Precio_Compra,                 
+                 Precio_Venta  = p_Precio_Venta
+          WHERE  Producto_Id   = p_Producto_Id;
+          
+      END IF;
+      
+      COMMIT;
+      
+END;
+
+CREATE PROCEDURE posdb.SPR_IU_Proveedores(
+IN  p_Proveedor_Id int(11),
+IN  p_Nombre	     varchar(50),
+IN  p_Contacto	   varchar(50),
+IN  p_Direccion	   varchar(50),
+IN  p_Telefono   	 varchar(10),
+IN  p_Observacion  varchar(100),
+OUT p_Resultado    tinyint (1))
+BEGIN
+     DECLARE EXIT HANDLER
+     FOR SQLEXCEPTION
+     BEGIN
+          SET p_Resultado = -1;
+          ROLLBACK;
+     END; 
+     
+     SET p_Resultado = 0;
+     
+     
+      IF (p_Proveedor_Id = 0) THEN
+          START TRANSACTION;
+          INSERT INTO tbl_proveedores(Nombre,
+                                  Contacto,
+                                  Direccion,
+                                  Telefono,	
+                                  Observacion) 
+                      VALUES(p_Nombre,	
+                             p_Contacto,
+                             p_Direccion,	
+                             p_Telefono,	
+                             p_Observacion);
+      ELSE
+          START TRANSACTION;
+          UPDATE tbl_proveedores
+          SET    Nombre       = p_Nombre,	
+                 Contacto     = p_Contacto, 	
+                 Direccion	  = p_Direccion,
+                 Telefono     = p_Telefono,
+                 Observacion  = p_Observacion	
+          WHERE  Proveedor_Id = p_Proveedor_Id;
+          
+      END IF;
+      
+      COMMIT;
+      
+END;
+
+CREATE PROCEDURE posdb.SPR_I_Ventas(
+IN  p_Producto_Id	    int(11),
+IN  p_Cliente_Id	    int(11),
+IN  p_Cantidad 	      int(11),
+IN  p_Monto_Recibido  int(11),
+OUT p_Resultado       tinyint (1))
+BEGIN
+     DECLARE v_Ganancia     int(11);
+     DECLARE v_Cambio       int(11);
+     DECLARE v_PrecioCompra int(11);
+     DECLARE v_PrecioVenta  int(11);
+     DECLARE v_Total        int(11);          
+      
+     DECLARE EXIT HANDLER
+     FOR SQLEXCEPTION
+     BEGIN
+          SET p_Resultado = -1;
+          ROLLBACK;
+     END; 
+     
+     -- Calcular Ganancia
+     SELECT Precio_Compra, Precio_Venta INTO v_PrecioCompra, v_PrecioVenta FROM tbl_productos
+     WHERE Producto_Id = p_ProductO_Id;
+     
+     set v_Total = (v_PrecioVenta * p_Cantidad);
+	   set v_Cambio = (p_Monto_recibido - v_Total);
+     set v_Ganancia = (v_Total-(p_Cantidad*v_PrecioCompra));     
+	   
+     
+     SET p_resultado = 0;
+     
+          START TRANSACTION;
+          INSERT INTO tbl_ventas(Producto_Id,
+                             Cliente_Id,
+                             Cantidad,
+                             Total,
+                             Ganancia,
+                             Monto_Recibido,
+                             Cambio) 
+                      VALUES(p_Producto_Id,
+                             p_Cliente_Id,                            
+                             p_Cantidad,
+                             v_Total,
+                             v_Ganancia,
+                             p_Monto_Recibido,
+                             v_Cambio);          
+          -- Actualizar Stock                   
+          UPDATE tbl_productos set Cantidad = (Cantidad - p_Cantidad) where Producto_Id = p_Producto_Id;                   
+          
+          COMMIT;
+      
+END;
+
+CREATE PROCEDURE posdb.SPR_R_Acceso(
+p_User_Name varchar(20),
+p_Clave varchar(20))
+BEGIN
+	   SELECT Perfil_Acceso FROM tbl_usuarios 
+     WHERE User_Name = p_User_Name
+     AND Clave = p_Clave;
+END;
+ 
+CREATE PROCEDURE posdb.SPR_R_BuscarRegistro(
+p_Tabla varchar(50),
+p_Dato int(11))
+BEGIN
+     IF (p_Tabla = 'tbl_clientes') THEN
+         SELECT * FROM tbl_clientes WHERE Cliente_Id = p_Dato;
+     ELSEIF (p_Tabla = 'tbl_productos') THEN
+             SELECT * FROM tbl_productos WHERE Producto_Id = p_Dato;
+     ELSEIF (p_Tabla = 'tbl_ventas') THEN
+             SELECT * FROM tbl_ventas WHERE Venta_Id = p_Dato;
+     ELSEIF (p_Tabla = 'tbl_proveedores') THEN
+             SELECT * FROM tbl_proveedores WHERE Proveedor_Id = p_Dato;
+     ELSEIF (p_Tabla = 'tbl_usuarios') THEN
+             SELECT * FROM tbl_usuarios WHERE Usuario_Id = p_Dato;
+     ELSEIF (p_Tabla = 'tbl_categorias') THEN
+             SELECT * FROM tbl_categorias WHERE Categoria_Id = p_Dato;        
+     END IF;
+END;
+
+CREATE PROCEDURE posdb.SPR_R_CargarCombos(
+p_Tabla varchar(20))
+BEGIN
+	   IF (p_Tabla = 'tbl_productos') THEN
+         SELECT Categoria_Id, Nombre, 'Categorias' AS TIPO FROM tbl_categorias
+         UNION ALL
+         SELECT Proveedor_Id, Nombre, 'Proveedores' AS TIPO FROM tbl_proveedores
+         ORDER BY TIPO;     
+     END IF; 
+END;
+
+CREATE PROCEDURE posdb.SPR_R_Consultas(
+p_Tabla varchar(20),
+p_Dato varchar(50))
+BEGIN
+     
+     DECLARE v_Rango1 date;
+     DECLARE v_Rango2 date;
+     
+	   IF (p_Tabla = 'tbl_proveedores') THEN
+         IF (p_Dato <> '') THEN
+             SELECT * FROM tbl_proveedores 
+             WHERE Nombre LIKE CONCAT('%', p_Dato , '%') 
+             or Contacto LIKE CONCAT('%', p_Dato , '%');
+         ELSE
+             SELECT * FROM tbl_proveedores;
+         END IF;
+     ELSEIF (p_Tabla = 'tbl_productos') THEN
+             IF (p_Dato <> '') THEN                 
+                 SELECT P.Producto_Id, V.Nombre AS Proveedor, C.Nombre AS Categoria, P.nombre, P.Cantidad, P.Precio_Compra, P.Precio_Venta 
+                 FROM tbl_productos P
+                 INNER JOIN tbl_categorias C ON C.categoria_id = P.categoria_Id 
+                 INNER JOIN tbl_proveedores V ON V.proveedor_Id = P.proveedor_Id
+                 WHERE P.Nombre LIKE CONCAT('%', p_Dato , '%');
+             ELSE
+                  SELECT P.Producto_Id, V.Nombre AS Proveedor, C.Nombre AS Categoria, P.nombre, P.Cantidad, P.Precio_Compra, P.Precio_Venta 
+                  FROM tbl_productos P
+                  INNER JOIN tbl_categorias C ON C.categoria_id = P.categoria_Id 
+                  INNER JOIN tbl_proveedores V ON V.proveedor_Id = P.proveedor_Id;
+             END IF;
+     ELSEIF (p_Tabla = 'tbl_categorias') THEN
+             IF (p_Dato <> '') THEN
+                 SELECT * FROM tbl_categorias 
+                 WHERE Nombre LIKE CONCAT('%', p_Dato , '%');
+             ELSE
+                  SELECT * FROM tbl_categorias;
+             END IF;     
+     ELSEIF (p_Tabla = 'tbl_clientes') THEN
+             IF (p_Dato <> '') THEN
+                 SELECT * FROM tbl_clientes 
+                 WHERE Nombre LIKE CONCAT('%', p_Dato , '%');                                  
+             ELSE
+                  SELECT * FROM tbl_clientes;
+             END IF;
+     ELSEIF (p_Tabla = 'tbl_ventas') THEN                     
+             SELECT P.Producto_Id, C.Nombre As Categoria, P.Nombre, P.Precio_Compra, P.Cantidad, S.Nombre AS Proveedor
+             FROM tbl_productos P
+             INNER JOIN tbl_categorias C ON P.Categoria_Id = C.Categoria_Id
+             INNER JOIN tbl_proveedores S ON P.Proveedor_id = S.Proveedor_id
+             WHERE P.Cantidad > 0
+             ORDER BY C.Nombre, P.Nombre;
+      ELSEIF (p_Tabla = 'Venta') THEN
+            select 'PRODUCTO' AS TIPO, P.Nombre, P.Precio_Compra, P.Precio_Venta, C.Nombre AS CATEGORIA, P.Cantidad
+            from tbl_productos P
+            INNER JOIN tbl_categorias C ON P.Categoria_Id = C.Categoria_Id
+            WHERE Producto_Id = p_Dato            
+            UNION ALL
+            SELECT 'CLIENTE' AS TIPO, Cliente_Id, Nombre, '', '', '' from tbl_clientes  
+            ORDER BY TIPO;
+      ELSE         
+          SET v_Rango1 = CAST(p_Tabla AS DATE);
+          SET v_Rango2 = CAST(p_Dato AS DATE);          
+                 
+          SELECT S.Fecha, C.Nombre AS Cliente, P.Nombre AS Producto, S.Cantidad, S.Total, S.Ganancia,
+          (SELECT sum(Total) FROM tbl_ventas WHERE Fecha BETWEEN v_Rango1 and v_Rango2) AS TotalVentas, 
+          (SELECT sum(Ganancia)FROM tbl_ventas WHERE Fecha BETWEEN v_Rango1 and v_Rango2) as Utilidad 
+          FROM tbl_ventas S
+          INNER JOIN tbl_clientes C ON C.Cliente_Id = S.Cliente_Id
+          INNER JOIN tbl_productos  P ON P.Producto_Id = S.Producto_Id
+          WHERE S.Fecha BETWEEN v_Rango1 and v_Rango2;
+     END IF;
+END;
+
+insert into tbl_usuarios(User_Name,Clave,Perfil_Acceso) 
+values 
+('admin','admin',1),
+('vendedor','vendedor',2);
+
+insert into tbl_categorias(Nombre) 
+values 
+('Comida Marina'),
+('Comidas Rapidas');
+
+insert into tbl_proveedores(Nombre,Contacto,Direccion,Telefono,Observacion) 
+values 
+('Inversiones Caceres','Maria Caceres','CR 78 N 89 - 23','4811537',''),
+('Surtitodo','Juan Martinez','AV 45 N 12 - 56','4417843','');
+
+insert into tbl_productos(Categoria_Id,Proveedor_Id,Nombre,Cantidad,Precio_Compra,Precio_Venta) 
+values 
+(1,1,'Salmon Al Ajillo',20,5000,10000),
+(1,1,'Robalo Asado',28,4000,8000),
+(1,1,'Trucha Asada',25,3000,6500),
+(2,2,'Hamburguesa',35,2500,5000),
+(2,2,'Pizza ',35,3000,6500);
+
+insert into tbl_clientes(Nombre,Telefono,Direccion,Observacion) 
+values
+('Angela Sanchez','4920327','CL 45 N 32 - 90',''),
+('Carlos Estrada','3102342780','AV 19 N 54 - 32','');
+
+insert into tbl_ventas(Producto_Id,Cliente_Id,Fecha,Cantidad,Total,Ganancia,Monto_Recibido,Cambio)
+values 
+(2,1,'2019-02-01 00:00:00',2,16000,8000,20000,4000),
+(4,2,'2019-02-01 00:00:00',5,25000,12500,50000,25000);
+
