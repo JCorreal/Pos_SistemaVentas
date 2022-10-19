@@ -496,25 +496,35 @@ BEGIN
      END IF;
 END;
 
+insert into tbl_usuarios(User_Name,Clave,Perfil_Acceso) 
+values 
+('admin','admin',1),
+('vendedor','vendedor',2);
 
+insert into tbl_categorias(Nombre) 
+values 
+('Comida Marina'),
+('Comidas Rapidas');
 
-insert into tbl_usuarios(User_Name,Clave,Perfil_Acceso) values ('admin','admin',1);
-insert into tbl_usuarios(User_Name,Clave,Perfil_Acceso) values ('vendedor','vendedor',2);
+insert into tbl_proveedores(Nombre,Contacto,Direccion,Telefono,Observacion) 
+values 
+('Inversiones Caceres','Maria Caceres','CR 78 N 89 - 23','4811537',''),
+('Surtitodo','Juan Martinez','AV 45 N 12 - 56','4417843','');
 
-insert into tbl_categorias(Nombre) values ('Comida Marina');
-insert into tbl_categorias(Nombre) values ('Comidas Rapidas');
+insert into tbl_productos(Categoria_Id,Proveedor_Id,Nombre,Cantidad,Precio_Compra,Precio_Venta) 
+values 
+(1,1,'Salmon Al Ajillo',20,5000,10000),
+(1,1,'Robalo Asado',28,4000,8000),
+(1,1,'Trucha Asada',25,3000,6500),
+(2,2,'Hamburguesa',35,2500,5000),
+(2,2,'Pizza ',35,3000,6500);
 
-insert into tbl_proveedores(Nombre,Contacto,Direccion,Telefono,Observacion) values ('Inversiones Caceres','Maria Caceres','CR 78 N 89 - 23','4811537','');
-insert into tbl_proveedores(Nombre,Contacto,Direccion,Telefono,Observacion) values ('Surtitodo','Juan Martinez','AV 45 N 12 - 56','4417843','                    ');
+insert into tbl_clientes(Nombre,Telefono,Direccion,Observacion) 
+values
+('Angela Sanchez','4920327','CL 45 N 32 - 90',''),
+('Carlos Estrada','3102342780','AV 19 N 54 - 32','');
 
-insert into tbl_productos(Categoria_Id,Proveedor_Id,Nombre,Cantidad,Precio_Compra,Precio_Venta) values (1,1,'Salmon Al Ajillo',20,5000,10000);
-insert into tbl_productos(Categoria_Id,Proveedor_Id,Nombre,Cantidad,Precio_Compra,Precio_Venta) values (1,1,'Robalo Asado',28,4000,8000);
-insert into tbl_productos(Categoria_Id,Proveedor_Id,Nombre,Cantidad,Precio_Compra,Precio_Venta) values (1,1,'Trucha Asada',25,3000,6500);
-insert into tbl_productos(Categoria_Id,Proveedor_Id,Nombre,Cantidad,Precio_Compra,Precio_Venta) values (2,2,'Hamburguesa',35,2500,5000);
-insert into tbl_productos(Categoria_Id,Proveedor_Id,Nombre,Cantidad,Precio_Compra,Precio_Venta) values (2,2,'Pizza ',35,3000,6500);
-
-insert into tbl_clientes(Nombre,Telefono,Direccion,Observacion) values ('Angela Sanchez','4920327','CL 45 N 32 - 90','');
-insert into tbl_clientes(Nombre,Telefono,Direccion,Observacion) values ('Carlos Estrada','3102342780','AV 19 N 54 - 32','');
-
-insert into tbl_ventas(Producto_Id,Cliente_Id,Fecha,Cantidad,Total,Ganancia,Monto_Recibido,Cambio) values (2,1,'2019-02-01 00:00:00',2,16000,8000,20000,4000);
-insert into tbl_ventas(Producto_Id,Cliente_Id,Fecha,Cantidad,Total,Ganancia,Monto_Recibido,Cambio) values (4,2,'2019-02-01 00:00:00',5,25000,12500,50000,25000);
+insert into tbl_ventas(Producto_Id,Cliente_Id,Fecha,Cantidad,Total,Ganancia,Monto_Recibido,Cambio)
+values 
+(2,1,'2019-02-01 00:00:00',2,16000,8000,20000,4000),
+(4,2,'2019-02-01 00:00:00',5,25000,12500,50000,25000);
