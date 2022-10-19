@@ -41,7 +41,7 @@ CREATE TABLE tbl_productos (
   Nombre varchar(100) NOT NULL COMMENT 'Nombre que identifica el producto',
   Cantidad int(11) NOT NULL COMMENT 'Cantidad de stock existente',
   Precio_Compra int(11) NOT NULL COMMENT 'Es el precio que cuesta adquirir el producto',
-  Precio_Venta int(11) NOT NULL COMMENT 'Es el precio al cual se vender· el producto',
+  Precio_Venta int(11) NOT NULL COMMENT 'Es el precio al cual se vender√° el producto',
   PRIMARY KEY (Producto_Id),
   KEY FK_SUPPLIER_ID (Proveedor_Id),
   KEY FK_category_id (Categoria_Id),
@@ -77,22 +77,22 @@ BEGIN
       
       DECLARE Cur_Categoria CURSOR FOR
       SELECT Categoria_Id
-      FROM   tbl_Productos
+      FROM   tbl_productos
       WHERE  Categoria_Id  = p_Dato LIMIT 1;
       
       DECLARE Cur_Cliente CURSOR FOR
       SELECT Cliente_Id
-      FROM   tbl_VENTAS
+      FROM   tbl_ventas
       WHERE  Cliente_Id  = p_Dato LIMIT 1;
       
       DECLARE Cur_Producto CURSOR FOR
       SELECT Producto_Id
-      FROM   tbl_VENTAS
+      FROM   tbl_ventas
       WHERE  Producto_Id  = p_Dato LIMIT 1;
       
       DECLARE Cur_Proveedor CURSOR FOR
       SELECT Proveedor_Id
-      FROM   tbl_Productos
+      FROM   tbl_productos
       WHERE  Proveedor_Id  = p_Dato LIMIT 1;
 
       DECLARE CONTINUE HANDLER FOR NOT FOUND SET CURVACIO = 1;
@@ -100,7 +100,7 @@ BEGIN
      
       SET p_Resultado = 0;
       
-      IF(p_Tabla = 'tbl_Categorias') THEN
+      IF(p_Tabla = 'tbl_categorias') THEN
          SET CURVACIO = 0;
 	       OPEN Cur_Categoria;
 		     FETCH Cur_Categoria INTO v_DatoExiste;
@@ -108,9 +108,9 @@ BEGIN
          IF (v_DatoExiste IS NOT NULL) THEN
              SET p_Resultado = 1;
          ELSE
-             DELETE FROM tbl_Categorias WHERE Categoria_Id = p_Dato;
+             DELETE FROM tbl_categorias WHERE Categoria_Id = p_Dato;
          END IF;		 
-      ELSEIF (p_Tabla = 'tbl_Clientes')  THEN              
+      ELSEIF (p_Tabla = 'tbl_clientes')  THEN              
               SET CURVACIO = 0;
               OPEN Cur_Cliente;
               FETCH Cur_Cliente INTO v_DatoExiste;
@@ -118,9 +118,9 @@ BEGIN
               IF (v_DatoExiste IS NOT NULL) THEN
                   SET p_Resultado = 1;
               ELSE
-                  DELETE FROM tbl_Clientes WHERE Cliente_Id = p_Dato;
+                  DELETE FROM tbl_clientes WHERE Cliente_Id = p_Dato;
               END IF;
-      ELSEIF (p_Tabla = 'tbl_Productos')  THEN              
+      ELSEIF (p_Tabla = 'tbl_productos')  THEN              
               SET CURVACIO = 0;
               OPEN Cur_Producto;
               FETCH Cur_Producto INTO v_DatoExiste;
@@ -128,9 +128,9 @@ BEGIN
               IF (v_DatoExiste IS NOT NULL) THEN
                   SET p_Resultado = 1;
               ELSE
-                  DELETE FROM tbl_Productos WHERE Producto_Id = p_Dato;
+                  DELETE FROM tbl_productos WHERE Producto_Id = p_Dato;
               END IF;		         
-      ELSEIF (p_Tabla = 'tbl_Proveedores')  THEN              
+      ELSEIF (p_Tabla = 'tbl_proveedores')  THEN              
               SET CURVACIO = 0;
               OPEN Cur_Proveedor;
               FETCH Cur_Proveedor INTO v_DatoExiste;
@@ -138,7 +138,7 @@ BEGIN
               IF (v_DatoExiste IS NOT NULL) THEN
                   SET p_Resultado = 1;
               ELSE
-                  DELETE FROM tbl_Proveedores WHERE Proveedor_Id = p_Dato;
+                  DELETE FROM tbl_proveedores WHERE Proveedor_Id = p_Dato;
               END IF;		         
       END IF;
       
@@ -157,7 +157,7 @@ BEGIN
       
       DECLARE Cur_Nombre CURSOR FOR
       SELECT NOMBRE
-      FROM   tbl_Categorias
+      FROM   tbl_categorias
       WHERE  NOMBRE  = p_Nombre;
       
       DECLARE EXIT HANDLER FOR SQLEXCEPTION SET p_RESULTADO = 2;
@@ -175,14 +175,14 @@ BEGIN
           IF (v_NombreNuevo IS NOT NULL) THEN
 		          SET p_Resultado = 1;      
 	        ELSE		       
-              INSERT INTO tbl_Categorias(Nombre) VALUES(p_Nombre);                                                                                      
+              INSERT INTO tbl_categorias(Nombre) VALUES(p_Nombre);                                                                                      
           END IF;                
       ELSE
-           SELECT NOMBRE INTO v_NombreActual FROM tbl_Categorias WHERE Categoria_Id = p_Categoria_Id;
+           SELECT NOMBRE INTO v_NombreActual FROM tbl_categorias WHERE Categoria_Id = p_Categoria_Id;
            IF ((v_NombreNuevo IS NOT NULL) AND (v_NombreActual <> p_NOMBRE)) THEN
 			         SET p_Resultado = 1;	  
 	         ELSE		            
-               UPDATE tbl_Categorias SET NOMBRE = p_Nombre          
+               UPDATE tbl_categorias SET NOMBRE = p_Nombre          
                WHERE Categoria_Id = p_Categoria_Id;          
            END IF;              
       END IF;
@@ -211,7 +211,7 @@ BEGIN
      
       IF (p_Cliente_Id = 0) THEN
           START TRANSACTION;
-          INSERT INTO tbl_Clientes(Nombre,
+          INSERT INTO tbl_clientes(Nombre,
                                 Telefono,
                                 Direccion,
                                 Observacion) 
@@ -221,7 +221,7 @@ BEGIN
                                        p_Observacion);
       ELSE
           START TRANSACTION;
-          UPDATE tbl_Clientes
+          UPDATE tbl_clientes
           SET    Nombre      = p_Nombre,
                  Telefono    = p_Telefono,
                  Direccion   = p_Direccion,
@@ -256,7 +256,7 @@ BEGIN
      
       IF (p_Producto_Id = 0) THEN
           START TRANSACTION;
-          INSERT INTO tbl_Productos(Categoria_Id,
+          INSERT INTO tbl_productos(Categoria_Id,
                                 Proveedor_Id,
                                 Nombre,
                                 Cantidad,
@@ -270,7 +270,7 @@ BEGIN
                                       p_Precio_Venta);
       ELSE
           START TRANSACTION;
-          UPDATE tbl_Productos
+          UPDATE tbl_productos
           SET    Categoria_Id  = p_Categoria_Id,
                  Proveedor_Id  = p_Proveedor_Id,
                  Nombre        = p_Nombre,
@@ -306,7 +306,7 @@ BEGIN
      
       IF (p_Proveedor_Id = 0) THEN
           START TRANSACTION;
-          INSERT INTO tbl_Proveedores(Nombre,
+          INSERT INTO tbl_proveedores(Nombre,
                                   Contacto,
                                   Direccion,
                                   Telefono,	
@@ -318,7 +318,7 @@ BEGIN
                              p_Observacion);
       ELSE
           START TRANSACTION;
-          UPDATE tbl_Proveedores
+          UPDATE tbl_proveedores
           SET    Nombre       = p_Nombre,	
                  Contacto     = p_Contacto, 	
                  Direccion	  = p_Direccion,
@@ -353,7 +353,7 @@ BEGIN
      END; 
      
      -- Calcular Ganancia
-     SELECT Precio_Compra, Precio_Venta INTO v_PrecioCompra, v_PrecioVenta FROM tbl_Productos
+     SELECT Precio_Compra, Precio_Venta INTO v_PrecioCompra, v_PrecioVenta FROM tbl_productos
      WHERE Producto_Id = p_ProductO_Id;
      
      set v_Total = (v_PrecioVenta * p_Cantidad);
@@ -364,7 +364,7 @@ BEGIN
      SET p_resultado = 0;
      
           START TRANSACTION;
-          INSERT INTO tbl_Ventas(Producto_Id,
+          INSERT INTO tbl_ventas(Producto_Id,
                              Cliente_Id,
                              Cantidad,
                              Total,
@@ -379,7 +379,7 @@ BEGIN
                              p_Monto_Recibido,
                              v_Cambio);          
           -- Actualizar Stock                   
-          UPDATE tbl_Productos set Cantidad = (Cantidad - p_Cantidad) where Producto_Id = p_Producto_Id;                   
+          UPDATE tbl_productos set Cantidad = (Cantidad - p_Cantidad) where Producto_Id = p_Producto_Id;                   
           
           COMMIT;
       
@@ -389,7 +389,7 @@ CREATE PROCEDURE posdb.SPR_R_Acceso(
 p_User_Name varchar(20),
 p_Clave varchar(20))
 BEGIN
-	   SELECT Perfil_Acceso FROM tbl_Usuarios 
+	   SELECT Perfil_Acceso FROM tbl_usuarios 
      WHERE User_Name = p_User_Name
      AND Clave = p_Clave;
 END;
@@ -398,28 +398,28 @@ CREATE PROCEDURE posdb.SPR_R_BuscarRegistro(
 p_Tabla varchar(50),
 p_Dato int(11))
 BEGIN
-     IF (p_Tabla = 'tbl_Clientes') THEN
-         SELECT * FROM tbl_Clientes WHERE Cliente_Id = p_Dato;
-     ELSEIF (p_Tabla = 'tbl_Productos') THEN
-             SELECT * FROM tbl_Productos WHERE Producto_Id = p_Dato;
-     ELSEIF (p_Tabla = 'tbl_Ventas') THEN
-             SELECT * FROM tbl_Ventas WHERE Venta_Id = p_Dato;
-     ELSEIF (p_Tabla = 'tbl_Proveedores') THEN
-             SELECT * FROM tbl_Proveedores WHERE Proveedor_Id = p_Dato;
-     ELSEIF (p_Tabla = 'tbl_Usuarios') THEN
-             SELECT * FROM tbl_Usuarios WHERE Usuario_Id = p_Dato;
-     ELSEIF (p_Tabla = 'tbl_Categorias') THEN
-             SELECT * FROM tbl_Categorias WHERE Categoria_Id = p_Dato;        
+     IF (p_Tabla = 'tbl_clientes') THEN
+         SELECT * FROM tbl_clientes WHERE Cliente_Id = p_Dato;
+     ELSEIF (p_Tabla = 'tbl_productos') THEN
+             SELECT * FROM tbl_productos WHERE Producto_Id = p_Dato;
+     ELSEIF (p_Tabla = 'tbl_ventas') THEN
+             SELECT * FROM tbl_ventas WHERE Venta_Id = p_Dato;
+     ELSEIF (p_Tabla = 'tbl_proveedores') THEN
+             SELECT * FROM tbl_proveedores WHERE Proveedor_Id = p_Dato;
+     ELSEIF (p_Tabla = 'tbl_usuarios') THEN
+             SELECT * FROM tbl_usuarios WHERE Usuario_Id = p_Dato;
+     ELSEIF (p_Tabla = 'tbl_categorias') THEN
+             SELECT * FROM tbl_categorias WHERE Categoria_Id = p_Dato;        
      END IF;
 END;
 
 CREATE PROCEDURE posdb.SPR_R_CargarCombos(
 p_Tabla varchar(20))
 BEGIN
-	   IF (p_Tabla = 'tbl_Productos') THEN
-         SELECT Categoria_Id, Nombre, 'Categorias' AS TIPO FROM tbl_Categorias
+	   IF (p_Tabla = 'tbl_productos') THEN
+         SELECT Categoria_Id, Nombre, 'Categorias' AS TIPO FROM tbl_categorias
          UNION ALL
-         SELECT Proveedor_Id, Nombre, 'Proveedores' AS TIPO FROM tbl_Proveedores
+         SELECT Proveedor_Id, Nombre, 'Proveedores' AS TIPO FROM tbl_proveedores
          ORDER BY TIPO;     
      END IF; 
 END;
@@ -432,66 +432,66 @@ BEGIN
      DECLARE v_Rango1 date;
      DECLARE v_Rango2 date;
      
-	   IF (p_Tabla = 'tbl_Proveedores') THEN
+	   IF (p_Tabla = 'tbl_proveedores') THEN
          IF (p_Dato <> '') THEN
-             SELECT * FROM tbl_Proveedores 
+             SELECT * FROM tbl_proveedores 
              WHERE Nombre LIKE CONCAT('%', p_Dato , '%') 
              or Contacto LIKE CONCAT('%', p_Dato , '%');
          ELSE
-             SELECT * FROM tbl_Proveedores;
+             SELECT * FROM tbl_proveedores;
          END IF;
-     ELSEIF (p_Tabla = 'tbl_Productos') THEN
+     ELSEIF (p_Tabla = 'tbl_productos') THEN
              IF (p_Dato <> '') THEN                 
                  SELECT P.Producto_Id, V.Nombre AS Proveedor, C.Nombre AS Categoria, P.nombre, P.Cantidad, P.Precio_Compra, P.Precio_Venta 
-                 FROM tbl_Productos P
+                 FROM tbl_productos P
                  INNER JOIN tbl_categorias C ON C.categoria_id = P.categoria_Id 
                  INNER JOIN tbl_proveedores V ON V.proveedor_Id = P.proveedor_Id
                  WHERE P.Nombre LIKE CONCAT('%', p_Dato , '%');
              ELSE
                   SELECT P.Producto_Id, V.Nombre AS Proveedor, C.Nombre AS Categoria, P.nombre, P.Cantidad, P.Precio_Compra, P.Precio_Venta 
-                  FROM tbl_Productos P
+                  FROM tbl_productos P
                   INNER JOIN tbl_categorias C ON C.categoria_id = P.categoria_Id 
                   INNER JOIN tbl_proveedores V ON V.proveedor_Id = P.proveedor_Id;
              END IF;
-     ELSEIF (p_Tabla = 'tbl_Categorias') THEN
+     ELSEIF (p_Tabla = 'tbl_categorias') THEN
              IF (p_Dato <> '') THEN
-                 SELECT * FROM tbl_Categorias 
+                 SELECT * FROM tbl_categorias 
                  WHERE Nombre LIKE CONCAT('%', p_Dato , '%');
              ELSE
-                  SELECT * FROM tbl_Categorias;
+                  SELECT * FROM tbl_categorias;
              END IF;     
-     ELSEIF (p_Tabla = 'tbl_Clientes') THEN
+     ELSEIF (p_Tabla = 'tbl_clientes') THEN
              IF (p_Dato <> '') THEN
-                 SELECT * FROM tbl_Clientes 
+                 SELECT * FROM tbl_clientes 
                  WHERE Nombre LIKE CONCAT('%', p_Dato , '%');                                  
              ELSE
-                  SELECT * FROM tbl_Clientes;
+                  SELECT * FROM tbl_clientes;
              END IF;
-     ELSEIF (p_Tabla = 'tbl_Ventas') THEN                     
+     ELSEIF (p_Tabla = 'tbl_ventas') THEN                     
              SELECT P.Producto_Id, C.Nombre As Categoria, P.Nombre, P.Precio_Compra, P.Cantidad, S.Nombre AS Proveedor
-             FROM tbl_Productos P
-             INNER JOIN tbl_Categorias C ON P.Categoria_Id = C.Categoria_Id
-             INNER JOIN tbl_Proveedores S ON P.Proveedor_id = S.Proveedor_id
+             FROM tbl_productos P
+             INNER JOIN tbl_categorias C ON P.Categoria_Id = C.Categoria_Id
+             INNER JOIN tbl_proveedores S ON P.Proveedor_id = S.Proveedor_id
              WHERE P.Cantidad > 0
              ORDER BY C.Nombre, P.Nombre;
       ELSEIF (p_Tabla = 'Venta') THEN
             select 'PRODUCTO' AS TIPO, P.Nombre, P.Precio_Compra, P.Precio_Venta, C.Nombre AS CATEGORIA, P.Cantidad
-            from tbl_Productos P
-            INNER JOIN tbl_Categorias C ON P.Categoria_Id = C.Categoria_Id
+            from tbl_productos P
+            INNER JOIN tbl_categorias C ON P.Categoria_Id = C.Categoria_Id
             WHERE Producto_Id = p_Dato            
             UNION ALL
-            SELECT 'CLIENTE' AS TIPO, Cliente_Id, Nombre, '', '', '' from tbl_Clientes  
+            SELECT 'CLIENTE' AS TIPO, Cliente_Id, Nombre, '', '', '' from tbl_clientes  
             ORDER BY TIPO;
       ELSE         
           SET v_Rango1 = CAST(p_Tabla AS DATE);
           SET v_Rango2 = CAST(p_Dato AS DATE);          
                  
           SELECT S.Fecha, C.Nombre AS Cliente, P.Nombre AS Producto, S.Cantidad, S.Total, S.Ganancia,
-          (SELECT sum(Total) FROM tbl_Ventas WHERE Fecha BETWEEN v_Rango1 and v_Rango2) AS TotalVentas, 
-          (SELECT sum(Ganancia)FROM tbl_Ventas WHERE Fecha BETWEEN v_Rango1 and v_Rango2) as Utilidad 
-          FROM tbl_Ventas S
-          INNER JOIN tbl_Clientes C ON C.Cliente_Id = S.Cliente_Id
-          INNER JOIN tbl_Productos  P ON P.Producto_Id = S.Producto_Id
+          (SELECT sum(Total) FROM tbl_ventas WHERE Fecha BETWEEN v_Rango1 and v_Rango2) AS TotalVentas, 
+          (SELECT sum(Ganancia)FROM tbl_ventas WHERE Fecha BETWEEN v_Rango1 and v_Rango2) as Utilidad 
+          FROM tbl_ventas S
+          INNER JOIN tbl_clientes C ON C.Cliente_Id = S.Cliente_Id
+          INNER JOIN tbl_productos  P ON P.Producto_Id = S.Producto_Id
           WHERE S.Fecha BETWEEN v_Rango1 and v_Rango2;
      END IF;
 END;
