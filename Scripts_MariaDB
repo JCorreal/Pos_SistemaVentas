@@ -442,13 +442,13 @@ BEGIN
          END IF;
      ELSEIF (p_Tabla = 'tbl_productos') THEN
              IF (p_Dato <> '') THEN                 
-                 SELECT P.Producto_Id, V.Nombre AS Proveedor, C.Nombre AS Categoria, P.nombre, P.Cantidad, P.Precio_Compra, P.Precio_Venta 
+                 SELECT P.Producto_Id, P.nombre, C.Nombre AS Categoria, V.Nombre AS Proveedor, P.Cantidad, P.Precio_Compra, P.Precio_Venta 
                  FROM tbl_productos P
                  INNER JOIN tbl_categorias C ON C.categoria_id = P.categoria_Id 
                  INNER JOIN tbl_proveedores V ON V.proveedor_Id = P.proveedor_Id
                  WHERE P.Nombre LIKE CONCAT('%', p_Dato , '%');
              ELSE
-                  SELECT P.Producto_Id, V.Nombre AS Proveedor, C.Nombre AS Categoria, P.nombre, P.Cantidad, P.Precio_Compra, P.Precio_Venta 
+                  SELECT P.Producto_Id, P.nombre, C.Nombre AS Categoria, V.Nombre AS Proveedor, P.Cantidad, P.Precio_Compra, P.Precio_Venta 
                   FROM tbl_productos P
                   INNER JOIN tbl_categorias C ON C.categoria_id = P.categoria_Id 
                   INNER JOIN tbl_proveedores V ON V.proveedor_Id = P.proveedor_Id;
